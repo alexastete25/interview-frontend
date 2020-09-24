@@ -2,35 +2,119 @@ import React from 'react';
 
 /* THE FIX STARTS HERE */
 
-// state data for 3 counters
+// Counter Component
+// const Counter = ({ value, onIncrement, onDecrement, id}) => {
+
+//   return (
+//     <div className="d-flex my-2">
+//       <strong>{value}</strong>
+//       <div className="ml-2">
+//         <button className="btn btn-danger mr-1" onClick={() => {onDecrement(id, 1);}}>-</button>
+//         <button className="btn btn-success" onClick={() => {onIncrement(id, 1);}}>+</button>
+//       </div>
+//     </div>
+//   );
+// };
+
+// Counter Component copy
 const data = [
   { id: 1, value: 0 },
   { id: 2, value: 0 },
   { id: 3, value: 0 },
-];
+  { id: 4, value: 0 }
+]
+const VALUE_TO_INCREMENT = 1
 
-// Counter Component
-const Counter = ({ value }) => {
+const Counter = ({ value, onChange, id }) => {
   return (
     <div className="d-flex my-2">
       <strong>{value}</strong>
       <div className="ml-2">
-        <button className="btn btn-danger mr-1">-</button>
-        <button className="btn btn-success">+</button>
+        <button className="btn btn-danger mr-1" onClick={() => { onChange().decrement(id, VALUE_TO_INCREMENT); }}>-</button>
+        <button className="btn btn-success" onClick={() => { onChange().increment(id, VALUE_TO_INCREMENT); }}>+</button>
       </div>
     </div>
   );
 };
 
+// GroupOfCounters Component
 const GroupOfCounters = () => {
+
+  const [counters, setcounters] = React.useState(data);
+
+  const [total, setTotal] = React.useState(0);
+
+  const onIncrement = (addToIncrement) => {
+    setTotal(total + addToIncrement);
+  };
+  const onDecrement = (addToDecrement) => {
+    setTotal(total - addToDecrement);
+  };
+
+  // const onIncrement = (id, addToIncrement) => {
+  //   setcounters(
+  //     counters.map((counter) => 
+  //       counter.id === id ? {...counter, value: counter.value + addToIncrement} : counter
+  //     )
+  //   )
+  //   onIncrement (addToIncrement);
+  // }
+
+  // const onDecrement = (id, addToDecrement) => {
+  //   setcounters(
+  //     counters.map((counter) => 
+  //       counter.id === id ? {...counter, value: counter.value - addToDecrement} : counter
+  //     )
+  //   )
+  //   onDecrement(addToDecrement);
+  // } 
+
+  const onChange = () => {
+    return {
+      increment: function (id, addToIncrement) {
+        setcounters(
+          counters.map((counter) =>
+            counter.id === id ? { ...counter, value: counter.value + addToIncrement } : counter
+          )
+        )
+        onIncrement(addToIncrement);
+
+      },
+
+      decrement: function (id, addToDecrement) {
+        setcounters(
+          counters.map((counter) =>
+            counter.id === id ? { ...counter, value: counter.value - addToDecrement } : counter
+          )
+        )
+        onDecrement(addToDecrement);
+      }
+    }
+  }
+
   return (
     <div>
-      {data.map((counter) => (
-        <Counter key={counter.id} value={counter.value} />
+      {counters.map((counter) => (
+        <div key={counter.id}>
+          <Counter value={counter.value}
+            // onIncrement = {onIncrement}
+            // onDecrement = {onDecrement}
+            onChange={onChange}
+            id={counter.id} />
+        </div>
       ))}
+      <Total total={total} />
+
     </div>
   );
 };
+
+// Total Component
+const Total = ({ total }) => {
+  return (
+    <strong>Total: {total}</strong>
+  )
+}
 
 /* THE FIX ENDS HERE */
 
@@ -57,7 +141,7 @@ const Exercise02 = () => {
         </li>
 
         <li>
-          Move the global <strong>data</strong> array to the component state for
+          Move the global <strong>counters</strong> array to the component state for
           the <strong>GroupOfCounters</strong> component.
         </li>
 
@@ -95,7 +179,6 @@ const Exercise02 = () => {
       </ol>
 
       <hr className="my-5" />
-
       <GroupOfCounters />
     </div>
   );
